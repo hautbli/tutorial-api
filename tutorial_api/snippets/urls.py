@@ -3,7 +3,7 @@ from django.urls import path, include
 from snippets import views
 
 router = DefaultRouter()
-router.register(r'snippets', views.SnippetViewSet,basename='user')
+router.register(r'snippets', views.SnippetViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
