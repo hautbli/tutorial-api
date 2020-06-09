@@ -2,10 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+# venv 폴더
+myvenv/
+
 
 # C extensions
 *.so
-
 # Distribution / packaging
 .Python
 build/
