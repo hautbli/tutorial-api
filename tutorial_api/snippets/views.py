@@ -13,6 +13,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from django_filters import rest_framework as filters1, CharFilter
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -35,13 +36,37 @@ class CustomAuthToken(ObtainAuthToken):
 #     if created:
 #         Token.objects.create(user=instance)
 
+class SnippetFilter(filters1.FilterSet):
+    min_price = filters1.NumberFilter(field_name="price", lookup_expr='gte')
+    max_price = filters1.NumberFilter(field_name="price", lookup_expr='lte')
+
+    # code_code = CharFilter(field_name='code', method='filter_code')
+
+    starts_with_title = CharFilter(field_name="code", method="filter_startswith_code")
+
+    def filter_startswith_code(self, queryset, name, value):
+        code_filter = {f'{name}__startswith': value}
+        print(code_filter)
+        return queryset.filter(**code_filter)
+
+    class Meta:
+        model = Snippet
+        fields = ['price',]
+
 
 class SnippetViewSet(viewsets.ModelViewSet):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['code', ]
-    permission_classes = []
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = ['code', ]
+
+    filter_backends = (filters1.DjangoFilterBackend,)
+    filterset_class = SnippetFilter
+
+    # 토큰 체크
+    def list(self, request, *args, **kwargs):
+        print(request.user.username)
+        return super().list(request, *args, **kwargs)
 
 # class SnippetViewSet(viewsets.ViewSet):
 #
